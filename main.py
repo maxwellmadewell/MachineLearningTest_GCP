@@ -17,11 +17,29 @@
 from flask import Flask
 from google.cloud import storage
 import os
+import requests
+from requests.exceptions import HTTPError
+from datetime import datetime
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
 app = Flask(__name__)
 
+api_key = os.environ.get('OPENSKY')
+city = "Nashville"
+url = "api.openweathermap.org/data/2.5/weather?q={}&appid={}".format(city, api_key)
+
+try:
+    r = requests.get(url)
+    r_data = r.json()
+    print(r_data)
+
+except HTTPError as http_err:
+    print(f'HTTP error occurred: {http_err}')
+except Exception as err:
+    print(f'Other error occurred: {err}')
+
+now = datetime.now()
 
 @app.route('/')
 def hello():
